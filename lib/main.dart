@@ -1,3 +1,4 @@
+import 'package:animation_3b/implicit_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,7 +10,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: ExplicitAnimationScreen());
+    return const MaterialApp(home: ImplicitAnimationScreen());
   }
 }
 
@@ -21,8 +22,9 @@ class ExplicitAnimationScreen extends StatefulWidget {
 }
 
 class _ExplicitAnimationState extends State<ExplicitAnimationScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController animationController;
+  late AnimationController exitController;
 
   @override
   void initState() {
@@ -33,6 +35,10 @@ class _ExplicitAnimationState extends State<ExplicitAnimationScreen>
       duration: Duration(seconds: 2),
       // lowerBound: 50,
       // upperBound: 200,
+    );
+    exitController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
     );
   }
 
@@ -46,6 +52,7 @@ class _ExplicitAnimationState extends State<ExplicitAnimationScreen>
             onPressed: () {
               animationController.forward().then((_) {
                 // animationController.reverse();
+                exitController.forward();
               });
               // setState(() {});
             },
@@ -95,15 +102,38 @@ class _ExplicitAnimationState extends State<ExplicitAnimationScreen>
           //     child: childWidget,
           //   ),
           // );
-          return ScaleTransition(
-            scale: Tween<double>(begin: 0, end: 1).animate(
+          // return ScaleTransition(
+          //   scale: Tween<double>(begin: 0, end: 1).animate(
+          //     CurvedAnimation(
+          //       parent: animationController,
+          //       curve: Curves.slowMiddle,
+          //     ),
+          //   ),
+          //   alignment: Alignment.bottomRight,
+          //   child: childWidget,
+          // );
+          // return RotationTransition(
+          //   turns: Tween<double>(begin: 0, end: 5).animate(
+          //     CurvedAnimation(
+          //       parent: animationController,
+          //       curve: Curves.linear,
+          //     ),
+          //   ),
+          //   alignment: Alignment.bottomRight,
+          //   child: childWidget,
+          // );
+          return RotationTransition(
+            turns: Tween<double>(begin: 0, end: 5).animate(
               CurvedAnimation(
                 parent: animationController,
-                curve: Curves.slowMiddle,
+                curve: Curves.linear,
               ),
             ),
-            alignment: Alignment.bottomRight,
-            child: childWidget,
+            // alignment: Alignment.bottomRight,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 1, end: 0).animate(exitController),
+              child: childWidget,
+            ),
           );
         },
         child: Center(child: Image.asset('assets/flutter.png')),
